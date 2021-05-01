@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 @SpringBootApplication
 @EnableBatchProcessing
-@EnableScheduling
 public class SpringBatchDemoApplication {
 
 	@Autowired
