@@ -20,17 +20,27 @@ public class SpringBatchDemoApplication {
 	private JobLauncher jobLauncher;
 
 	@Autowired
-	private Job processJob;
+	private Job processJob1;
+
+	@Autowired
+	private Job processJob2;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBatchDemoApplication.class, args);
 	}
 
 	@Scheduled(cron = "0 */1 * * * ?")
-	public void perform() throws Exception {
-		JobParameters params = new JobParametersBuilder().addString("JobID", String.valueOf(System.currentTimeMillis()))
+	public void performJob1() throws Exception {
+		JobParameters params = new JobParametersBuilder().addString("JobID1", String.valueOf(System.currentTimeMillis()))
 														 .toJobParameters();
-		jobLauncher.run(processJob, params);
+		jobLauncher.run(processJob1, params);
+	}
+
+	@Scheduled(cron = "0 */1 * * * ?")
+	public void performJob2() throws Exception {
+		JobParameters params = new JobParametersBuilder().addString("JobID2", String.valueOf(System.currentTimeMillis()))
+				.toJobParameters();
+		jobLauncher.run(processJob2, params);
 	}
 
 }

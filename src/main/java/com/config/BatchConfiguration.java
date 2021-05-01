@@ -1,14 +1,17 @@
 package com.config;
 
 import com.listener.JobCompletionListener;
-import com.step.EmployeeProcessor;
 import com.step.Employee;
+import com.step.EmployeeProcessor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.launch.support.SimpleJobLauncher;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
@@ -22,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
 
@@ -41,8 +45,27 @@ public class BatchConfiguration {
     DataSource dataSource;
 
     @Bean
-    public Job processJob() {
-        return jobBuilderFactory.get("processJob")
+    public ThreadPoolTaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(15);
+        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setQueueCapacity(30);
+        return taskExecutor;
+    }
+
+    @Bean
+    public Job processJob1() {
+        return jobBuilderFactory.get("processJob1")
+                .incrementer(new RunIdIncrementer())
+                .listener(listener())
+                .flow(orderStep())
+                .end()
+                .build();
+    }
+
+    @Bean
+    public Job processJob2() {
+        return jobBuilderFactory.get("processJob2")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener())
                 .flow(orderStep())

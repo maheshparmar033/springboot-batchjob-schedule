@@ -13,9 +13,9 @@ public class JobCompletionListener extends JobExecutionListenerSupport {
 
     @Override
     public void afterJob(JobExecution jobExecution) {
+        System.out.println("JOB ID = "+jobExecution.getJobId());
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
             System.out.println("BATCH JOB COMPLETED SUCCESSFULLY");
-            emailSender.sendSimpleMessage("to", "Subject Line", "Email body here");
         } else if(jobExecution.getStatus() == BatchStatus.FAILED) {
             System.out.println("BATCH JOB FAILED...!!!");
             emailSender.sendSimpleMessage("to", "Subject", "Email body");
